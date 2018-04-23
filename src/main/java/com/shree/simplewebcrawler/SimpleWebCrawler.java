@@ -16,9 +16,8 @@ import java.util.HashSet;
  */
 public class SimpleWebCrawler {
     private HashSet<String> links;
-    private int currentDepth;
     String url;
-    String depth;
+    String maxdepth;
     String[] args;
     static final String USAGE_STRING_SHORT =
             "Usage: java [SystemProperties] -jar crawler.jar [-h|-] [<file|folder|url|arg> [<file|folder|url|arg>...]]";
@@ -30,7 +29,7 @@ public class SimpleWebCrawler {
      */
     public SimpleWebCrawler(String url, String depth, String[] args) {
         this.url = url;
-        this.depth = depth;
+        this.maxdepth = depth;
         this.args = args;
         links = new HashSet<String>();
     }
@@ -60,16 +59,14 @@ public class SimpleWebCrawler {
      * @param depth depth to check
      */
     public void getPageLinks(String URL, int depth) {
-        currentDepth = 0;
-        if ((!links.contains(URL) && (currentDepth < Integer.parseInt(this.depth)))) {
+        if ((!links.contains(URL) && (depth <= Integer.parseInt(this.maxdepth)))) {
             System.out.println(">> Depth: " + depth + " [" + URL + "]");
             try {
                 links.add(URL);
-
                 Document document = Jsoup.connect(URL).get();
                 Elements linksOnPage = document.select("a[href]");
 
-                currentDepth++;
+                depth++;
                 saveWebPage(URL);
                 getStylesAndScripts(URL);
                 getAllImages(URL);
@@ -94,7 +91,7 @@ public class SimpleWebCrawler {
                     new BufferedReader(new InputStreamReader(url.openStream()));
 
             String[] path = ExtractPath(page);
-            String path_dir = path[1];
+            String path_dir = path[0];
             // Enter filename in which you want to download
             BufferedWriter writer =
                     new BufferedWriter(new FileWriter(path_dir + "/index.html"));
@@ -147,7 +144,7 @@ public class SimpleWebCrawler {
         Document doc;
         try {
 
-            //get all images
+            //get all files
             doc = Jsoup.connect(url).get();
             Elements csslinks = doc.select("link[href^="+url+"]");
             for (Element link : csslinks) {
@@ -267,7 +264,7 @@ public class SimpleWebCrawler {
      * Execute the program
      */
     public void execute() {
-            getPageLinks(this.url, currentDepth);
+            getPageLinks(this.url, 0);
     }
 
     /**
