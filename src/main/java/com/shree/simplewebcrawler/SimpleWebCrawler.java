@@ -28,9 +28,10 @@ public class SimpleWebCrawler {
      * @param url url to get crawl data
      * @param depth Depth level
      */
-    public SimpleWebCrawler(String url, String depth) {
+    public SimpleWebCrawler(String url, String depth, String[] args) {
         this.url = url;
         this.depth = depth;
+        this.args = args;
         links = new HashSet<String>();
     }
 
@@ -263,15 +264,10 @@ public class SimpleWebCrawler {
     }
 
     /**
-     * Check for arguments and show messages
+     * Execute the program
      */
     public void execute() {
-        if (args.length > 0) {
             getPageLinks(this.url, currentDepth);
-        } else {
-            usageShort();
-            return;
-        }
     }
 
     /**
@@ -287,7 +283,8 @@ public class SimpleWebCrawler {
         if (url == null && depth == null) {
             System.err.println("Specifying url && depth are mandatory.\n" + USAGE_STRING_SHORT);
         }
-        return new SimpleWebCrawler(url, depth);
+        System.out.println(args.length);
+        return new SimpleWebCrawler(url, depth, args);
     }
 
     /**
@@ -295,6 +292,7 @@ public class SimpleWebCrawler {
      * @param args
      */
     public static void main(String[] args) {
+
         if (0 < args.length && ("-help".equals(args[0]) || "--help".equals(args[0]) || "-h".equals(args[0]))) {
             usage();
         } else {
